@@ -1,0 +1,31 @@
+Create a Forefox extension (manifest v3) that will put a tiny button on top-left position of all tables on the page. This tiny button has the text "csv". If the user clicks that small csv button the table contents should be copied to the clipboard in csv format. All HTML that exist inside the cell should be removed. After the copy, show 1 second message "CSV copied to clipboard" in the same place of the button. After that 1 second remove the message (the csv button should stay).
+
+Each csv "cell" content should be copied as-is, without escaping anything.
+
+HTML example:
+```
+<table border="1">
+    <tr>
+        <th>ID</th>
+        <th>Date</th>
+        <th><span>Description</span></th>
+    </tr>
+    <tr>
+        <td>1</td>
+        <td>2025-07-15</td>
+        <td>"Sample" text 1</td>
+    </tr>
+    <tr>
+        <td>2</td>
+        <td>2025-07-16</td>
+        <td>Sample <strong>text</strong> 2</td>
+    </tr>
+</table>
+```
+
+Resulting CSV:
+```
+ID,Date,Description
+1,2025-07-15,"Sample" text 1
+2,2025-07-16,Sample text 2
+```

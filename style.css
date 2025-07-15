@@ -1,0 +1,22 @@
+.csv-button {
+  position: absolute;
+  top: 0;
+  left: 0;
+  background-color: #f0f0f0;
+  border: 1px solid #ccc;
+  border-radius: 3px;
+  padding: 2px 5px;
+  cursor: pointer;
+  font-size: 12px;
+}
+
+.copy-message {
+  position: absolute;
+  top: 0;
+  left: 0;
+  background-color: #4CAF50;
+  color: white;
+  padding: 2px 5px;
+  border-radius: 3px;
+  font-size: 12px;
+}
