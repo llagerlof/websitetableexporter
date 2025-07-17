@@ -2,6 +2,8 @@
 
 A browser extension that automatically adds export functionality to HTML tables on any website. Export tables to CSV, JSON, or Markdown format with a single click.
 
+![Website Table Exporter Screenshot](./assets/screenshot.png)
+
 ## ✨ Features
 
 - **Universal compatibility**: Works on any website with HTML tables
@@ -12,14 +14,38 @@ A browser extension that automatically adds export functionality to HTML tables 
 - **Merged cell detection**: Warns users when tables contain merged cells that may affect export quality
 - **Clean formatting**: Properly handles line breaks, special characters, and escaping
 
-## 🎯 Use Cases
+### Example Output
 
-- **Data Analysis**: Quickly export website tables for analysis in Excel, Google Sheets, or other tools
-- **Documentation**: Convert HTML tables to Markdown for documentation or README files
-- **Research**: Extract data from research papers, reports, or statistical websites
-- **Content Migration**: Move tabular data between different platforms and formats
-- **API Development**: Export table data as JSON for testing or development purposes
-- **Academic Work**: Extract data from academic databases and online resources
+**CSV Format:**
+```
+"Name","Age","City"
+"John Doe","30","New York"
+"Jane Smith","25","Los Angeles"
+```
+
+**JSON Format:**
+```json
+[
+  {
+    "Name": "John Doe",
+    "Age": "30",
+    "City": "New York"
+  },
+  {
+    "Name": "Jane Smith",
+    "Age": "25",
+    "City": "Los Angeles"
+  }
+]
+```
+
+**Markdown Format:**
+```markdown
+| Name | Age | City |
+| --- | --- | --- |
+| John Doe | 30 | New York |
+| Jane Smith | 25 | Los Angeles |
+```
 
 ## 🚀 Installation
 
@@ -60,38 +86,14 @@ A browser extension that automatically adds export functionality to HTML tables 
 3. **Click any export button** to copy the data to your clipboard
 4. **Paste the data** into your preferred application
 
-### Example Output
+## 🎯 Use Cases
 
-**CSV Format:**
-```
-"Name","Age","City"
-"John Doe","30","New York"
-"Jane Smith","25","Los Angeles"
-```
-
-**JSON Format:**
-```json
-[
-  {
-    "Name": "John Doe",
-    "Age": "30",
-    "City": "New York"
-  },
-  {
-    "Name": "Jane Smith",
-    "Age": "25",
-    "City": "Los Angeles"
-  }
-]
-```
-
-**Markdown Format:**
-```markdown
-| Name | Age | City |
-| --- | --- | --- |
-| John Doe | 30 | New York |
-| Jane Smith | 25 | Los Angeles |
-```
+- **Data Analysis**: Quickly export website tables for analysis in Excel, Google Sheets, or other tools
+- **Documentation**: Convert HTML tables to Markdown for documentation or README files
+- **Research**: Extract data from research papers, reports, or statistical websites
+- **Content Migration**: Move tabular data between different platforms and formats
+- **API Development**: Export table data as JSON for testing or development purposes
+- **Academic Work**: Extract data from academic databases and online resources
 
 ## ⚠️ Important Notes
 
