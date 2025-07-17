@@ -1,13 +1,33 @@
-.csv-button {
+.table-buttons-container {
   position: absolute;
   top: 0;
-  left: 0;
+  right: 0;
+  display: flex;
+  gap: 2px;
+  z-index: 1000;
+}
+
+.table-button {
   background-color: #f0f0f0;
   border: 1px solid #ccc;
   border-radius: 3px;
   padding: 2px 5px;
   cursor: pointer;
   font-size: 12px;
+  user-select: none;
+  transition: background-color 0.2s;
+}
+
+.table-button:hover {
+  background-color: #e0e0e0;
+}
+
+.csv-button {
+  background-color: #f0f0f0;
+}
+
+.json-button {
+  background-color: #f0f0f0;
 }
 
 .copy-message {
