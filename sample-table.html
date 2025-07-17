@@ -1,0 +1,95 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Sample Table</title>
+  <style>
+    table {
+      border-collapse: collapse;
+      width: 60%;
+      margin: 20px auto;
+    }
+    th, td {
+      border: 1px solid #444;
+      padding: 8px 12px;
+      text-align: left;
+    }
+    th {
+      background-color: #f2f2f2;
+    }
+  </style>
+</head>
+<body>
+
+  <h2>Regular Table (No Merged Cells)</h2>
+  <table>
+    <thead>
+      <tr>
+        <th>ID</th>
+        <th>Name</th>
+        <th>Status</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr><td>1</td><td>Alice</td><td>Active</td></tr>
+      <tr><td>2</td><td>Bob <strong>McNamara</strong></td><td>Inactive</td></tr>
+      <tr><td>3</td><td>Charlie</td><td>Active</td></tr>
+      <tr><td>4</td><td>Diana</td><td>Inactive</td></tr>
+      <tr><td>5</td><td>Edward</td><td>Active</td></tr>
+      <tr><td>6</td><td>Fiona</td><td>Inactive</td></tr>
+      <tr><td>7</td><td>George</td><td>Active</td></tr>
+      <tr><td>8</td><td>Hannah</td><td>Inactive</td></tr>
+      <tr><td>9</td><td>Ian</td><td>Active</td></tr>
+      <tr><td>10</td><td>Jane</td><td>Inactive</td></tr>
+    </tbody>
+  </table>
+
+  <h2>Table with Merged Cells (Should Show Warning)</h2>
+  <table>
+    <thead>
+      <tr>
+        <th>Product</th>
+        <th colspan="2">Sales Data</th>
+        <th>Status</th>
+      </tr>
+      <tr>
+        <th></th>
+        <th>Q1</th>
+        <th>Q2</th>
+        <th></th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td>Widget A</td>
+        <td>1000</td>
+        <td>1200</td>
+        <td>Active</td>
+      </tr>
+      <tr>
+        <td>Widget B</td>
+        <td>800</td>
+        <td>900</td>
+        <td>Active</td>
+      </tr>
+      <tr>
+        <td>Widget C</td>
+        <td colspan="2">Discontinued</td>
+        <td>Inactive</td>
+      </tr>
+      <tr>
+        <td rowspan="2">Widget D</td>
+        <td>500</td>
+        <td>600</td>
+        <td>Active</td>
+      </tr>
+      <tr>
+        <td>550</td>
+        <td>650</td>
+        <td>Active</td>
+      </tr>
+    </tbody>
+  </table>
+
+</body>
+</html>

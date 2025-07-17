@@ -40,6 +40,7 @@ table tr:first-child th:first-child:hover ~ .table-buttons-container {
   padding: 2px 5px;
   cursor: pointer;
   font-size: 10px;
+  font-family: sans-serif;
   user-select: none;
   transition: background-color 0.2s;
   white-space: nowrap;
@@ -79,12 +80,18 @@ table tr:first-child th:first-child:hover ~ .table-buttons-container {
   padding: 6px 8px;
   margin-top: 2px;
   display: flex;
-  align-items: center;
+  align-items: flex-start;
   gap: 8px;
   font-size: 12px;
+  font-family: sans-serif;
   color: #252525;
   max-width: 300px;
   box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+}
+
+.warning-icon {
+  flex-shrink: 0;
+  line-height: 1.2;
 }
 
 .warning-text {
