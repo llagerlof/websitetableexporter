@@ -16,6 +16,7 @@
   font-size: 12px;
   user-select: none;
   transition: background-color 0.2s;
+  white-space: nowrap;
 }
 
 .table-button:hover {
@@ -27,6 +28,10 @@
 }
 
 .json-button {
+  background-color: #f0f0f0;
+}
+
+.markdown-button {
   background-color: #f0f0f0;
 }
 

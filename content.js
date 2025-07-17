@@ -41,6 +41,51 @@ function tableToJSON(table) {
   return JSON.stringify(jsonData, null, 2);
 }
 
+function tableToMarkdown(table) {
+  let markdown = [];
+
+  if (table.rows.length === 0) return '';
+
+  // Get headers from the first row
+  let headerRow = table.rows[0];
+  let headers = [];
+  for (let j = 0; j < headerRow.cells.length; j++) {
+    let cellText = headerRow.cells[j].innerText.trim();
+    // Escape pipe characters in markdown
+    cellText = cellText.replace(/\|/g, '\\|');
+    headers.push(cellText);
+  }
+
+  // Create header row
+  markdown.push('| ' + headers.join(' | ') + ' |');
+
+  // Create separator row
+  let separators = headers.map(() => '---');
+  markdown.push('| ' + separators.join(' | ') + ' |');
+
+  // Process data rows (skip header row)
+  for (let i = 1; i < table.rows.length; i++) {
+    let row = [];
+    let cols = table.rows[i].querySelectorAll('td, th');
+
+    for (let j = 0; j < cols.length; j++) {
+      let cellText = cols[j].innerText.trim();
+      // Escape pipe characters in markdown
+      cellText = cellText.replace(/\|/g, '\\|');
+      row.push(cellText);
+    }
+
+    // Pad row to match header length
+    while (row.length < headers.length) {
+      row.push('');
+    }
+
+    markdown.push('| ' + row.join(' | ') + ' |');
+  }
+
+  return markdown.join('\n');
+}
+
 function showMessage(element, message, originalText) {
   element.textContent = message;
   setTimeout(() => {
@@ -63,9 +108,15 @@ document.querySelectorAll('table').forEach(table => {
   jsonButton.textContent = 'JSON';
   jsonButton.classList.add('table-button', 'json-button');
 
+  // Create Markdown button
+  const markdownButton = document.createElement('div');
+  markdownButton.textContent = 'Markdown';
+  markdownButton.classList.add('table-button', 'markdown-button');
+
   // Add buttons to container
   buttonContainer.appendChild(csvButton);
   buttonContainer.appendChild(jsonButton);
+  buttonContainer.appendChild(markdownButton);
 
   // Position table and add container
   table.style.position = 'relative';
@@ -84,6 +135,14 @@ document.querySelectorAll('table').forEach(table => {
     const jsonData = tableToJSON(table);
     navigator.clipboard.writeText(jsonData).then(() => {
       showMessage(jsonButton, 'Copied!', 'JSON');
+    });
+  });
+
+  // Markdown button event listener
+  markdownButton.addEventListener('click', () => {
+    const markdownData = tableToMarkdown(table);
+    navigator.clipboard.writeText(markdownData).then(() => {
+      showMessage(markdownButton, 'Copied!', 'Markdown');
     });
   });
 });
