@@ -1,8 +1,8 @@
 {
   "manifest_version": 3,
-  "name": "HTML table exporter",
-  "version": "1.1.0",
-  "description": "Allow export table data in web pages to CSV, JSON and Markdown.",
+  "name": "Website table exporter",
+  "version": "1.2.0",
+  "description": "Export website's tables to CSS, JSON and Markdown.",
   "permissions": [
     "activeTab",
     "clipboardWrite"
@@ -21,5 +21,5 @@
     }
   ],
   "author": "Lawrence Lagerlof",
-  "homepage_url": "https://github.com/llagerlof/htmltableexporter"
+  "homepage_url": "https://github.com/llagerlof/websitetableexporter"
 }

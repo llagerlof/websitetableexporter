@@ -128,7 +128,13 @@ function showMessage(element, message, originalText) {
   }, 1000);
 }
 
-document.querySelectorAll('table').forEach(table => {
+// Function to add buttons to a single table
+function addButtonsToTable(table) {
+  // Skip if table already has buttons
+  if (table.querySelector('.table-buttons-container')) {
+    return;
+  }
+
   // Create container for buttons
   const buttonContainer = document.createElement('div');
   buttonContainer.classList.add('table-buttons-container');
@@ -223,4 +229,36 @@ document.querySelectorAll('table').forEach(table => {
       }
     });
   });
+}
+
+// Function to process all tables on the page
+function processAllTables() {
+  document.querySelectorAll('table').forEach(addButtonsToTable);
+}
+
+// Initialize buttons on existing tables
+processAllTables();
+
+// Create MutationObserver to watch for dynamically added tables
+const observer = new MutationObserver((mutations) => {
+  mutations.forEach((mutation) => {
+    // Check for added nodes
+    mutation.addedNodes.forEach((node) => {
+      // If the added node is a table, add buttons to it
+      if (node.nodeType === Node.ELEMENT_NODE && node.tagName === 'TABLE') {
+        addButtonsToTable(node);
+      }
+
+      // If the added node contains tables, add buttons to them
+      if (node.nodeType === Node.ELEMENT_NODE && node.querySelectorAll) {
+        node.querySelectorAll('table').forEach(addButtonsToTable);
+      }
+    });
+  });
+});
+
+// Start observing the document for changes
+observer.observe(document.body, {
+  childList: true,
+  subtree: true
 });
