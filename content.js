@@ -90,6 +90,36 @@ function tableToMarkdown(table) {
   return markdown.join('\n');
 }
 
+function hasMergedCells(table) {
+  // Check all cells in the table for colspan or rowspan attributes
+  const cells = table.querySelectorAll('td, th');
+  for (let cell of cells) {
+    const colspan = cell.getAttribute('colspan');
+    const rowspan = cell.getAttribute('rowspan');
+    if ((colspan && parseInt(colspan) > 1) || (rowspan && parseInt(rowspan) > 1)) {
+      return true;
+    }
+  }
+  return false;
+}
+
+function createWarningMessage(buttonContainer) {
+  const warningDiv = document.createElement('div');
+  warningDiv.classList.add('merged-cells-warning');
+  warningDiv.innerHTML = `
+    <span class="warning-text">⚠️ Copied, but table contains merged cells. Exported data may not be reliable.</span>
+    <button class="warning-close-btn">×</button>
+  `;
+
+  // Add close button functionality
+  const closeBtn = warningDiv.querySelector('.warning-close-btn');
+  closeBtn.addEventListener('click', () => {
+    warningDiv.remove();
+  });
+
+  return warningDiv;
+}
+
 function showMessage(element, message, originalText) {
   element.textContent = message;
   setTimeout(() => {
@@ -101,6 +131,10 @@ document.querySelectorAll('table').forEach(table => {
   // Create container for buttons
   const buttonContainer = document.createElement('div');
   buttonContainer.classList.add('table-buttons-container');
+
+  // Create button row to hold the buttons
+  const buttonRow = document.createElement('div');
+  buttonRow.classList.add('button-row');
 
   // Create CSV button
   const csvButton = document.createElement('div');
@@ -117,10 +151,13 @@ document.querySelectorAll('table').forEach(table => {
   markdownButton.textContent = 'Markdown';
   markdownButton.classList.add('table-button', 'markdown-button');
 
-  // Add buttons to container
-  buttonContainer.appendChild(csvButton);
-  buttonContainer.appendChild(jsonButton);
-  buttonContainer.appendChild(markdownButton);
+  // Add buttons to button row
+  buttonRow.appendChild(csvButton);
+  buttonRow.appendChild(jsonButton);
+  buttonRow.appendChild(markdownButton);
+
+  // Add button row to container
+  buttonContainer.appendChild(buttonRow);
 
   // Position table and add container
   table.style.position = 'relative';
@@ -131,6 +168,18 @@ document.querySelectorAll('table').forEach(table => {
     const csvData = tableToCSV(table);
     navigator.clipboard.writeText(csvData).then(() => {
       showMessage(csvButton, 'Copied!', 'CSV');
+
+      // Show warning if table has merged cells
+      if (hasMergedCells(table)) {
+        // Remove any existing warning
+        const existingWarning = buttonContainer.querySelector('.merged-cells-warning');
+        if (existingWarning) {
+          existingWarning.remove();
+        }
+
+        const warning = createWarningMessage(buttonContainer);
+        buttonContainer.appendChild(warning);
+      }
     });
   });
 
@@ -139,6 +188,18 @@ document.querySelectorAll('table').forEach(table => {
     const jsonData = tableToJSON(table);
     navigator.clipboard.writeText(jsonData).then(() => {
       showMessage(jsonButton, 'Copied!', 'JSON');
+
+      // Show warning if table has merged cells
+      if (hasMergedCells(table)) {
+        // Remove any existing warning
+        const existingWarning = buttonContainer.querySelector('.merged-cells-warning');
+        if (existingWarning) {
+          existingWarning.remove();
+        }
+
+        const warning = createWarningMessage(buttonContainer);
+        buttonContainer.appendChild(warning);
+      }
     });
   });
 
@@ -147,6 +208,18 @@ document.querySelectorAll('table').forEach(table => {
     const markdownData = tableToMarkdown(table);
     navigator.clipboard.writeText(markdownData).then(() => {
       showMessage(markdownButton, 'Copied!', 'Markdown');
+
+      // Show warning if table has merged cells
+      if (hasMergedCells(table)) {
+        // Remove any existing warning
+        const existingWarning = buttonContainer.querySelector('.merged-cells-warning');
+        if (existingWarning) {
+          existingWarning.remove();
+        }
+
+        const warning = createWarningMessage(buttonContainer);
+        buttonContainer.appendChild(warning);
+      }
     });
   });
 });
