@@ -92,4 +92,62 @@
   </table>
 
 </body>
+
+<script>
+window.addEventListener('load', function() {
+  setTimeout(function() {
+    // Create the third table
+    const table = document.createElement('table');
+
+    // Create header section
+    const h2 = document.createElement('h2');
+    h2.textContent = 'JavaScript Generated Table (Created 1 second after page load)';
+
+    // Create table header
+    const thead = document.createElement('thead');
+    const headerRow = document.createElement('tr');
+
+    const headers = ['Employee ID', 'Department', 'Salary', 'Location'];
+    headers.forEach(headerText => {
+      const th = document.createElement('th');
+      th.textContent = headerText;
+      headerRow.appendChild(th);
+    });
+
+    thead.appendChild(headerRow);
+    table.appendChild(thead);
+
+    // Create table body
+    const tbody = document.createElement('tbody');
+
+    const employeeData = [
+      ['E001', 'Engineering', '$75,000', 'New York'],
+      ['E002', 'Marketing', '$65,000', 'Los Angeles'],
+      ['E003', 'Sales', '$55,000', 'Chicago'],
+      ['E004', 'HR', '$60,000', 'Austin'],
+      ['E005', 'Finance', '$70,000', 'Boston'],
+      ['E006', 'IT', '$68,000', 'Seattle'],
+      ['E007', 'Operations', '$58,000', 'Denver']
+    ];
+
+    employeeData.forEach(rowData => {
+      const row = document.createElement('tr');
+      rowData.forEach(cellData => {
+        const td = document.createElement('td');
+        td.textContent = cellData;
+        row.appendChild(td);
+      });
+      tbody.appendChild(row);
+    });
+
+    table.appendChild(tbody);
+
+    // Insert the header and table into the page
+    document.body.appendChild(h2);
+    document.body.appendChild(table);
+
+  }, 1000); // Wait 1 second after page load
+});
+</script>
+
 </html>
