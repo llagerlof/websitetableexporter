@@ -49,12 +49,14 @@ function tableToMarkdown(table) {
   // Get headers from the first row
   let headerRow = table.rows[0];
   let headers = [];
-  for (let j = 0; j < headerRow.cells.length; j++) {
-    let cellText = headerRow.cells[j].innerText.trim();
-    // Escape pipe characters in markdown
-    cellText = cellText.replace(/\|/g, '\\|');
-    headers.push(cellText);
-  }
+      for (let j = 0; j < headerRow.cells.length; j++) {
+      let cellText = headerRow.cells[j].innerText.trim();
+      // Replace line breaks with <br> tags for markdown (supports Windows \r\n, Unix \n, and Mac \r)
+      cellText = cellText.replace(/\r\n|\r|\n/g, '<br>');
+      // Escape pipe characters in markdown
+      cellText = cellText.replace(/\|/g, '\\|');
+      headers.push(cellText);
+    }
 
   // Create header row
   markdown.push('| ' + headers.join(' | ') + ' |');
@@ -70,6 +72,8 @@ function tableToMarkdown(table) {
 
     for (let j = 0; j < cols.length; j++) {
       let cellText = cols[j].innerText.trim();
+      // Replace line breaks with <br> tags for markdown (supports Windows \r\n, Unix \n, and Mac \r)
+      cellText = cellText.replace(/\r\n|\r|\n/g, '<br>');
       // Escape pipe characters in markdown
       cellText = cellText.replace(/\|/g, '\\|');
       row.push(cellText);
