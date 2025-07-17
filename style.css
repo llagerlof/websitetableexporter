@@ -74,11 +74,13 @@ table tr:first-child th:first-child:hover ~ .table-buttons-container {
 }
 
 .merged-cells-warning {
+  position: absolute;
+  top: 20px;
+  left: 0;
   background-color: #eeeeee;
   border: 1px solid #dddddd;
   border-radius: 4px;
   padding: 6px 8px;
-  margin-top: 2px;
   display: flex;
   align-items: flex-start;
   gap: 8px;
@@ -87,6 +89,7 @@ table tr:first-child th:first-child:hover ~ .table-buttons-container {
   color: #252525;
   max-width: 300px;
   box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+  z-index: 1001;
 }
 
 .warning-icon {
@@ -102,7 +105,7 @@ table tr:first-child th:first-child:hover ~ .table-buttons-container {
 .warning-close-btn {
   background: none;
   border: none;
-  font-size: 14px;
+  font-size: 16px;
   font-weight: bold;
   color: #000000;
   cursor: pointer;

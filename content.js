@@ -173,13 +173,13 @@ document.querySelectorAll('table').forEach(table => {
       // Show warning if table has merged cells
       if (hasMergedCells(table)) {
         // Remove any existing warning
-        const existingWarning = buttonContainer.querySelector('.merged-cells-warning');
+        const existingWarning = table.querySelector('.merged-cells-warning');
         if (existingWarning) {
           existingWarning.remove();
         }
 
         const warning = createWarningMessage(buttonContainer);
-        buttonContainer.appendChild(warning);
+        table.appendChild(warning);
       }
     });
   });
@@ -193,13 +193,13 @@ document.querySelectorAll('table').forEach(table => {
       // Show warning if table has merged cells
       if (hasMergedCells(table)) {
         // Remove any existing warning
-        const existingWarning = buttonContainer.querySelector('.merged-cells-warning');
+        const existingWarning = table.querySelector('.merged-cells-warning');
         if (existingWarning) {
           existingWarning.remove();
         }
 
         const warning = createWarningMessage(buttonContainer);
-        buttonContainer.appendChild(warning);
+        table.appendChild(warning);
       }
     });
   });
@@ -213,13 +213,13 @@ document.querySelectorAll('table').forEach(table => {
       // Show warning if table has merged cells
       if (hasMergedCells(table)) {
         // Remove any existing warning
-        const existingWarning = buttonContainer.querySelector('.merged-cells-warning');
+        const existingWarning = table.querySelector('.merged-cells-warning');
         if (existingWarning) {
           existingWarning.remove();
         }
 
         const warning = createWarningMessage(buttonContainer);
-        buttonContainer.appendChild(warning);
+        table.appendChild(warning);
       }
     });
   });
