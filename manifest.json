@@ -21,5 +21,13 @@
     }
   ],
   "author": "Lawrence Lagerlof",
+  "browser_specific_settings": {
+    "gecko": {
+      "id": "websitetableexporter@lawrence.lagerlof"
+    },
+    "chrome": {
+      "minimum_chrome_version": "88"
+    }
+  },
   "homepage_url": "https://github.com/llagerlof/websitetableexporter"
 }
