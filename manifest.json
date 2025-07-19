@@ -1,8 +1,8 @@
 {
   "manifest_version": 3,
-  "name": "Website table exporter",
+  "name": "Website Table Exporter",
   "version": "1.2.0",
-  "description": "Export website's tables to CSS, JSON and Markdown.",
+  "description": "Export website's tables to CSV, JSON and Markdown.",
   "permissions": [
     "activeTab",
     "clipboardWrite"
