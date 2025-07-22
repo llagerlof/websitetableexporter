@@ -100,6 +100,7 @@ table tr:first-child th:first-child:hover ~ .table-buttons-container {
 .warning-text {
   flex: 1;
   line-height: 1.2;
+  text-align: left;
 }
 
 .warning-close-btn {

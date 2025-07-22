@@ -108,7 +108,7 @@ function createWarningMessage(buttonContainer) {
   warningDiv.classList.add('merged-cells-warning');
   warningDiv.innerHTML = `
     <span class="warning-icon">⚠️</span>
-    <span class="warning-text">Copied, but table contains merged cells. Exported data may not be reliable.</span>
+    <span class="warning-text">Copied, but the table contains merged cells. Exported data may be unreliable due to limitations of the destination format.</span>
     <button class="warning-close-btn">×</button>
   `;
 
