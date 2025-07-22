@@ -1,6 +1,36 @@
 // Global variable to track button visibility
 let buttonsVisible = true;
 
+// Utility function to generate unique IDs
+function generateUniqueId() {
+  return 'table-' + Date.now() + '-' + Math.random().toString(36).substr(2, 9);
+}
+
+// Function to position button container relative to its table
+function positionButtonContainer(buttonContainer, table) {
+  if (!buttonContainer.parentElement || !table) return;
+
+  const tableRect = table.getBoundingClientRect();
+  const containerParent = buttonContainer.parentElement;
+
+  // Check if the container parent has a positioned context
+  const parentComputedStyle = window.getComputedStyle(containerParent);
+  const isParentPositioned = ['relative', 'absolute', 'fixed'].includes(parentComputedStyle.position);
+
+  if (!isParentPositioned) {
+    // If parent is not positioned, use fixed positioning relative to viewport
+    buttonContainer.style.position = 'fixed';
+    buttonContainer.style.left = tableRect.left + 'px';
+    buttonContainer.style.top = tableRect.top + 'px';
+  } else {
+    // If parent is positioned, use absolute positioning relative to parent
+    const parentRect = containerParent.getBoundingClientRect();
+    buttonContainer.style.position = 'absolute';
+    buttonContainer.style.left = (tableRect.left - parentRect.left) + 'px';
+    buttonContainer.style.top = (tableRect.top - parentRect.top) + 'px';
+  }
+}
+
 function tableToCSV(table) {
   let csv = [];
   for (let i = 0; i < table.rows.length; i++) {
@@ -121,6 +151,9 @@ function createWarningMessage(buttonContainer) {
     warningDiv.remove();
   });
 
+  // Position warning relative to button container
+  buttonContainer.appendChild(warningDiv);
+
   return warningDiv;
 }
 
@@ -150,7 +183,7 @@ function toggleAllButtons() {
 // Function to add buttons to a single table
 function addButtonsToTable(table) {
   // Skip if table already has buttons
-  if (table.querySelector('.table-buttons-container')) {
+  if (table.nextElementSibling && table.nextElementSibling.classList.contains('table-buttons-container')) {
     return;
   }
 
@@ -190,9 +223,18 @@ function addButtonsToTable(table) {
   // Add button row to container
   buttonContainer.appendChild(buttonRow);
 
-  // Position table and add container
-  table.style.position = 'relative';
-  table.insertBefore(buttonContainer, table.firstChild);
+  // Position the button container as a sibling, not as a child of the table
+  // This prevents any interference with table layout
+  if (table.parentNode) {
+    table.parentNode.insertBefore(buttonContainer, table.nextSibling);
+  }
+
+  // Store reference to the table for positioning
+  buttonContainer.setAttribute('data-table-id', generateUniqueId());
+  table.setAttribute('data-table-id', buttonContainer.getAttribute('data-table-id'));
+
+  // Position the button container
+  positionButtonContainer(buttonContainer, table);
 
   // CSV button event listener
   csvButton.addEventListener('click', () => {
@@ -203,13 +245,12 @@ function addButtonsToTable(table) {
       // Show warning if table has merged cells
       if (hasMergedCells(table)) {
         // Remove any existing warning
-        const existingWarning = table.querySelector('.merged-cells-warning');
+        const existingWarning = buttonContainer.querySelector('.merged-cells-warning');
         if (existingWarning) {
           existingWarning.remove();
         }
 
         const warning = createWarningMessage(buttonContainer);
-        table.appendChild(warning);
       }
     });
   });
@@ -223,13 +264,12 @@ function addButtonsToTable(table) {
       // Show warning if table has merged cells
       if (hasMergedCells(table)) {
         // Remove any existing warning
-        const existingWarning = table.querySelector('.merged-cells-warning');
+        const existingWarning = buttonContainer.querySelector('.merged-cells-warning');
         if (existingWarning) {
           existingWarning.remove();
         }
 
         const warning = createWarningMessage(buttonContainer);
-        table.appendChild(warning);
       }
     });
   });
@@ -243,13 +283,12 @@ function addButtonsToTable(table) {
       // Show warning if table has merged cells
       if (hasMergedCells(table)) {
         // Remove any existing warning
-        const existingWarning = table.querySelector('.merged-cells-warning');
+        const existingWarning = buttonContainer.querySelector('.merged-cells-warning');
         if (existingWarning) {
           existingWarning.remove();
         }
 
         const warning = createWarningMessage(buttonContainer);
-        table.appendChild(warning);
       }
     });
   });
@@ -258,6 +297,20 @@ function addButtonsToTable(table) {
 // Function to process all tables on the page
 function processAllTables() {
   document.querySelectorAll('table').forEach(addButtonsToTable);
+}
+
+// Function to reposition all button containers
+function repositionAllButtons() {
+  document.querySelectorAll('.table-buttons-container').forEach(buttonContainer => {
+    const tableId = buttonContainer.getAttribute('data-table-id');
+    const table = document.querySelector(`table[data-table-id="${tableId}"]`);
+    if (table) {
+      positionButtonContainer(buttonContainer, table);
+    } else {
+      // Clean up orphaned button containers
+      buttonContainer.remove();
+    }
+  });
 }
 
 // Message listener for popup communication
@@ -272,6 +325,16 @@ chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
 
 // Initialize buttons on existing tables
 processAllTables();
+
+// Add event listeners for repositioning buttons on scroll and resize
+let repositionTimeout;
+function debounceReposition() {
+  clearTimeout(repositionTimeout);
+  repositionTimeout = setTimeout(repositionAllButtons, 10);
+}
+
+window.addEventListener('scroll', debounceReposition, { passive: true });
+window.addEventListener('resize', debounceReposition, { passive: true });
 
 // Create MutationObserver to watch for dynamically added tables
 const observer = new MutationObserver((mutations) => {

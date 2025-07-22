@@ -9,6 +9,7 @@
   transition: opacity 0.2s ease;
   flex-direction: column;
   align-items: flex-start;
+  pointer-events: auto;
 }
 
 .table-buttons-container.hidden {
@@ -26,14 +27,9 @@
 }
 
 /* Make buttons fully opaque when hovering over the first cell of the table */
-table:has(tr:first-child td:first-child:hover) .table-buttons-container,
-table:has(tr:first-child th:first-child:hover) .table-buttons-container {
-  opacity: 1;
-}
-
-/* Fallback for browsers that don't support :has() - hover anywhere on first cell */
-table tr:first-child td:first-child:hover ~ .table-buttons-container,
-table tr:first-child th:first-child:hover ~ .table-buttons-container {
+table:hover + .table-buttons-container,
+table:has(tr:first-child td:first-child:hover) + .table-buttons-container,
+table:has(tr:first-child th:first-child:hover) + .table-buttons-container {
   opacity: 1;
 }
 
@@ -78,8 +74,8 @@ table tr:first-child th:first-child:hover ~ .table-buttons-container {
 }
 
 .merged-cells-warning {
-  position: absolute;
-  top: 20px;
+  position: relative;
+  top: 5px;
   left: 0;
   background-color: #eeeeee;
   border: 1px solid #dddddd;
@@ -94,6 +90,7 @@ table tr:first-child th:first-child:hover ~ .table-buttons-container {
   max-width: 300px;
   box-shadow: 0 2px 4px rgba(0,0,0,0.1);
   z-index: 1001;
+  margin-top: 2px;
 }
 
 .warning-icon {
