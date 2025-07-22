@@ -1,3 +1,6 @@
+// Global variable to track button visibility
+let buttonsVisible = true;
+
 function tableToCSV(table) {
   let csv = [];
   for (let i = 0; i < table.rows.length; i++) {
@@ -128,6 +131,22 @@ function showMessage(element, message, originalText) {
   }, 1000);
 }
 
+// Function to toggle all table buttons visibility
+function toggleAllButtons() {
+  buttonsVisible = !buttonsVisible;
+  const allButtonContainers = document.querySelectorAll('.table-buttons-container');
+
+  allButtonContainers.forEach(container => {
+    if (buttonsVisible) {
+      container.classList.remove('hidden');
+    } else {
+      container.classList.add('hidden');
+    }
+  });
+
+  return buttonsVisible;
+}
+
 // Function to add buttons to a single table
 function addButtonsToTable(table) {
   // Skip if table already has buttons
@@ -138,6 +157,11 @@ function addButtonsToTable(table) {
   // Create container for buttons
   const buttonContainer = document.createElement('div');
   buttonContainer.classList.add('table-buttons-container');
+
+  // Apply current visibility state
+  if (!buttonsVisible) {
+    buttonContainer.classList.add('hidden');
+  }
 
   // Create button row to hold the buttons
   const buttonRow = document.createElement('div');
@@ -235,6 +259,16 @@ function addButtonsToTable(table) {
 function processAllTables() {
   document.querySelectorAll('table').forEach(addButtonsToTable);
 }
+
+// Message listener for popup communication
+chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
+  if (request.action === 'toggleButtons') {
+    const newState = toggleAllButtons();
+    sendResponse({buttonsVisible: newState});
+  } else if (request.action === 'getButtonsState') {
+    sendResponse({buttonsVisible: buttonsVisible});
+  }
+});
 
 // Initialize buttons on existing tables
 processAllTables();

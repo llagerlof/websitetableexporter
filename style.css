@@ -11,6 +11,10 @@
   align-items: flex-start;
 }
 
+.table-buttons-container.hidden {
+  display: none !important;
+}
+
 .table-buttons-container .button-row {
   display: flex;
   gap: 2px;

@@ -9,6 +9,7 @@ A browser extension that automatically adds export functionality to HTML tables 
 - **Universal compatibility**: Works on any website with HTML tables
 - **Multiple export formats**: CSV, JSON, and Markdown
 - **One-click export**: Export buttons appear automatically on all tables
+- **Toggle button visibility**: Hide/show export buttons via extension popup
 - **Clipboard integration**: Exported data is copied directly to your clipboard
 - **Dynamic table support**: Automatically detects and adds buttons to tables created with JavaScript
 - **Merged cell detection**: Warns users when tables contain merged cells that may affect export quality
@@ -78,6 +79,7 @@ A browser extension that automatically adds export functionality to HTML tables 
 
 ## 📖 How to Use
 
+### Basic Export Functionality
 1. **Navigate to any webpage** containing HTML tables
 2. **Export buttons appear automatically** on each table:
    - **CSV**: Export as comma-separated values
@@ -85,6 +87,12 @@ A browser extension that automatically adds export functionality to HTML tables 
    - **Markdown**: Export as Markdown table format
 3. **Click any export button** to copy the data to your clipboard
 4. **Paste the data** into your preferred application
+
+### Toggle Button Visibility
+1. **Click the extension icon** in your browser's toolbar to open the popup
+2. **Click "Hide buttons"** to hide all export buttons from tables on the current page
+3. **Click "Show buttons"** to make the buttons visible again
+4. **Note**: This setting resets when the page is refreshed - it does not persist between page loads
 
 ## 🎯 Use Cases
 
@@ -99,6 +107,7 @@ A browser extension that automatically adds export functionality to HTML tables 
 
 - **Merged Cells**: Tables with merged cells (colspan/rowspan) will show a warning message, as the exported data may not be completely reliable
 - **Dynamic Tables**: The extension automatically detects tables added to the page after initial load
+- **Button Visibility**: The hide/show toggle only affects the current page and resets on page reload
 - **Privacy**: The extension only accesses the current active tab and doesn't collect any personal data
 
 ## 🔧 Technical Details

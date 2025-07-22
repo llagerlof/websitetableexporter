@@ -7,6 +7,10 @@
     "activeTab",
     "clipboardWrite"
   ],
+  "action": {
+    "default_popup": "popup.html",
+    "default_title": "Website Table Exporter"
+  },
   "icons": {
     "16": "icons/icon-16.png",
     "32": "icons/icon-32.png",
