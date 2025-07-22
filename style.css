@@ -74,9 +74,7 @@ table:has(tr:first-child th:first-child:hover) + .table-buttons-container {
 }
 
 .merged-cells-warning {
-  position: relative;
-  top: 5px;
-  left: 0;
+  position: absolute;
   background-color: #eeeeee;
   border: 1px solid #dddddd;
   border-radius: 4px;
@@ -90,7 +88,7 @@ table:has(tr:first-child th:first-child:hover) + .table-buttons-container {
   max-width: 300px;
   box-shadow: 0 2px 4px rgba(0,0,0,0.1);
   z-index: 1001;
-  margin-top: 2px;
+  opacity: 1 !important;
 }
 
 .warning-icon {

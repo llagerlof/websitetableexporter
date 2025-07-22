@@ -151,8 +151,19 @@ function createWarningMessage(buttonContainer) {
     warningDiv.remove();
   });
 
-  // Position warning relative to button container
-  buttonContainer.appendChild(warningDiv);
+  // Position warning as a sibling to button container, not as a child
+  // This prevents it from inheriting the container's opacity
+  if (buttonContainer.parentNode) {
+    buttonContainer.parentNode.insertBefore(warningDiv, buttonContainer.nextSibling);
+
+    // Position the warning relative to the button container
+    const containerRect = buttonContainer.getBoundingClientRect();
+    const parentRect = buttonContainer.parentNode.getBoundingClientRect();
+
+    warningDiv.style.position = buttonContainer.style.position; // Use same positioning as container
+    warningDiv.style.left = buttonContainer.style.left;
+    warningDiv.style.top = (parseInt(buttonContainer.style.top) + buttonContainer.offsetHeight + 2) + 'px';
+  }
 
   return warningDiv;
 }
@@ -244,8 +255,11 @@ function addButtonsToTable(table) {
 
       // Show warning if table has merged cells
       if (hasMergedCells(table)) {
-        // Remove any existing warning
-        const existingWarning = buttonContainer.querySelector('.merged-cells-warning');
+        // Remove any existing warning (look for siblings)
+        let existingWarning = buttonContainer.nextElementSibling;
+        while (existingWarning && !existingWarning.classList.contains('merged-cells-warning')) {
+          existingWarning = existingWarning.nextElementSibling;
+        }
         if (existingWarning) {
           existingWarning.remove();
         }
@@ -263,8 +277,11 @@ function addButtonsToTable(table) {
 
       // Show warning if table has merged cells
       if (hasMergedCells(table)) {
-        // Remove any existing warning
-        const existingWarning = buttonContainer.querySelector('.merged-cells-warning');
+        // Remove any existing warning (look for siblings)
+        let existingWarning = buttonContainer.nextElementSibling;
+        while (existingWarning && !existingWarning.classList.contains('merged-cells-warning')) {
+          existingWarning = existingWarning.nextElementSibling;
+        }
         if (existingWarning) {
           existingWarning.remove();
         }
@@ -282,8 +299,11 @@ function addButtonsToTable(table) {
 
       // Show warning if table has merged cells
       if (hasMergedCells(table)) {
-        // Remove any existing warning
-        const existingWarning = buttonContainer.querySelector('.merged-cells-warning');
+        // Remove any existing warning (look for siblings)
+        let existingWarning = buttonContainer.nextElementSibling;
+        while (existingWarning && !existingWarning.classList.contains('merged-cells-warning')) {
+          existingWarning = existingWarning.nextElementSibling;
+        }
         if (existingWarning) {
           existingWarning.remove();
         }
@@ -299,6 +319,15 @@ function processAllTables() {
   document.querySelectorAll('table').forEach(addButtonsToTable);
 }
 
+// Function to reposition a warning message relative to its button container
+function repositionWarningMessage(warning, buttonContainer) {
+  if (!warning || !buttonContainer || !buttonContainer.parentNode) return;
+
+  warning.style.position = buttonContainer.style.position;
+  warning.style.left = buttonContainer.style.left;
+  warning.style.top = (parseInt(buttonContainer.style.top) + buttonContainer.offsetHeight + 2) + 'px';
+}
+
 // Function to reposition all button containers
 function repositionAllButtons() {
   document.querySelectorAll('.table-buttons-container').forEach(buttonContainer => {
@@ -306,8 +335,24 @@ function repositionAllButtons() {
     const table = document.querySelector(`table[data-table-id="${tableId}"]`);
     if (table) {
       positionButtonContainer(buttonContainer, table);
+
+      // Also reposition any associated warning messages
+      let warning = buttonContainer.nextElementSibling;
+      while (warning && !warning.classList.contains('merged-cells-warning')) {
+        warning = warning.nextElementSibling;
+      }
+      if (warning) {
+        repositionWarningMessage(warning, buttonContainer);
+      }
     } else {
-      // Clean up orphaned button containers
+      // Clean up orphaned button containers and their warnings
+      let warning = buttonContainer.nextElementSibling;
+      while (warning && !warning.classList.contains('merged-cells-warning')) {
+        warning = warning.nextElementSibling;
+      }
+      if (warning) {
+        warning.remove();
+      }
       buttonContainer.remove();
     }
   });
