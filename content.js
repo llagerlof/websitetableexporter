@@ -150,10 +150,11 @@ function analyzeTableColumns(table) {
   const firstRow = table.rows[0];
   const numColumns = firstRow.cells.length;
 
-  // Check each column
+    // Check each column
   for (let colIndex = 0; colIndex < numColumns; colIndex++) {
     let hasValues = false;
     let allNumeric = true;
+    let hasLeadingZeros = false;
 
     // Check all data rows (skip header row)
     for (let rowIndex = 1; rowIndex < table.rows.length; rowIndex++) {
@@ -164,6 +165,12 @@ function analyzeTableColumns(table) {
         // Skip empty cells
         if (cellText !== '') {
           hasValues = true;
+
+          // Check for leading zeros in integers (but allow decimals like '0.5')
+          if (cellText.startsWith('0') && cellText.length > 1 && !cellText.includes('.')) {
+            hasLeadingZeros = true;
+          }
+
           if (!isNumericValue(cellText)) {
             allNumeric = false;
             break;
@@ -172,8 +179,8 @@ function analyzeTableColumns(table) {
       }
     }
 
-    // Column is numeric if it has values and all non-empty values are numeric
-    if (hasValues && allNumeric) {
+    // Column is numeric if it has values, all non-empty values are numeric, and no leading zeros in integers
+    if (hasValues && allNumeric && !hasLeadingZeros) {
       numericColumns.add(colIndex);
     }
   }

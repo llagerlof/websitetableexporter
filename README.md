@@ -65,10 +65,8 @@ A browser extension that automatically adds export functionality to HTML tables 
 
 ### Mozilla Firefox
 
-1. **Install from Firefox Add-ons** (when published):
-   - Visit Firefox Add-ons store
-   - Search for "Website Table Exporter"
-   - Click "Add to Firefox"
+1. **Install from Firefox Add-ons**:
+   - https://addons.mozilla.org/firefox/addon/website-table-exporter/
 
 2. **Manual Installation** (for development):
    - Download or clone this repository
