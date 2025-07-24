@@ -5,7 +5,7 @@
   display: flex;
   gap: 2px;
   z-index: 1000;
-  opacity: 0.5;
+  opacity: 0.4;
   transition: opacity 0.2s ease;
   flex-direction: column;
   align-items: flex-start;
@@ -27,7 +27,6 @@
 }
 
 /* Make buttons fully opaque when hovering over the first cell of the table */
-table:hover + .table-buttons-container,
 table:has(tr:first-child td:first-child:hover) + .table-buttons-container,
 table:has(tr:first-child th:first-child:hover) + .table-buttons-container {
   opacity: 1;
