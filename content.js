@@ -104,14 +104,101 @@ function positionButtonContainer(buttonContainer, table) {
   }
 }
 
+// Helper function to check if a value is a valid number
+function isNumericValue(value) {
+  if (!value || value.trim() === '') return false;
+  const trimmed = value.trim();
+
+  // Remove common currency symbols and formatting
+  const cleaned = trimmed.replace(/[$€£¥₹₩₪₦₨₱₪₡₵₸₼₾₰₲₴₶₷₸₹₺₻₽₾₿]/g, '') // Currency symbols
+                        .replace(/[,\s]/g, '') // Commas and spaces
+                        .replace(/^\(/, '-') // Negative numbers in parentheses
+                        .replace(/\)$/, ''); // Close parenthesis for negative numbers
+
+  // Check for valid number formats including integers, decimals, and scientific notation
+  return !isNaN(cleaned) && !isNaN(parseFloat(cleaned)) && isFinite(cleaned) && cleaned !== '';
+}
+
+// Helper function to convert a formatted number string to a numeric value
+function parseNumericValue(value) {
+  if (!value || value.trim() === '') return 0;
+  const trimmed = value.trim();
+
+  // Handle negative numbers in parentheses
+  let isNegative = false;
+  if (trimmed.startsWith('(') && trimmed.endsWith(')')) {
+    isNegative = true;
+  }
+
+  // Remove common currency symbols and formatting
+  const cleaned = trimmed.replace(/[$€£¥₹₩₪₦₨₱₪₡₵₸₼₾₰₲₴₶₷₸₹₺₻₽₾₿]/g, '') // Currency symbols
+                        .replace(/[,\s]/g, '') // Commas and spaces
+                        .replace(/^\(/, '') // Open parenthesis
+                        .replace(/\)$/, ''); // Close parenthesis
+
+  const numericValue = parseFloat(cleaned);
+  return isNegative ? -numericValue : numericValue;
+}
+
+// Function to analyze table columns and identify which ones are numeric
+function analyzeTableColumns(table) {
+  const numericColumns = new Set();
+
+  if (table.rows.length <= 1) return numericColumns; // No data rows to analyze
+
+  // Get the number of columns from the first row
+  const firstRow = table.rows[0];
+  const numColumns = firstRow.cells.length;
+
+  // Check each column
+  for (let colIndex = 0; colIndex < numColumns; colIndex++) {
+    let hasValues = false;
+    let allNumeric = true;
+
+    // Check all data rows (skip header row)
+    for (let rowIndex = 1; rowIndex < table.rows.length; rowIndex++) {
+      const row = table.rows[rowIndex];
+      if (colIndex < row.cells.length) {
+        const cellText = row.cells[colIndex].innerText.trim();
+
+        // Skip empty cells
+        if (cellText !== '') {
+          hasValues = true;
+          if (!isNumericValue(cellText)) {
+            allNumeric = false;
+            break;
+          }
+        }
+      }
+    }
+
+    // Column is numeric if it has values and all non-empty values are numeric
+    if (hasValues && allNumeric) {
+      numericColumns.add(colIndex);
+    }
+  }
+
+  return numericColumns;
+}
+
 function tableToCSV(table) {
   let csv = [];
+  const numericColumns = analyzeTableColumns(table);
+
   for (let i = 0; i < table.rows.length; i++) {
     let row = [], cols = table.rows[i].querySelectorAll('td, th');
     for (let j = 0; j < cols.length; j++) {
       let cellText = cols[j].innerText.trim();
-      let escapedText = cellText.replace(/"/g, '""');
-      row.push(`"${escapedText}"`);
+
+      // For header row (i === 0) or non-numeric columns, always quote
+      if (i === 0 || !numericColumns.has(j) || !isNumericValue(cellText)) {
+        let escapedText = cellText.replace(/"/g, '""');
+        row.push(`"${escapedText}"`);
+      } else {
+        // For numeric values in numeric columns, don't quote and use cleaned numeric value
+        const numericValue = parseNumericValue(cellText);
+        row.push(numericValue.toString());
+      }
     }
     csv.push(row.join(','));
   }
@@ -121,6 +208,7 @@ function tableToCSV(table) {
 function tableToJSON(table) {
   let jsonData = [];
   let headers = [];
+  const numericColumns = analyzeTableColumns(table);
 
   // Get headers from the first row
   let headerRow = table.rows[0];
@@ -138,7 +226,13 @@ function tableToJSON(table) {
     for (let j = 0; j < cols.length; j++) {
       let cellText = cols[j].innerText.trim();
       let header = headers[j] || `Column${j + 1}`;
-      rowData[header] = cellText;
+
+      // Convert to number if this column is numeric and the value is numeric
+      if (numericColumns.has(j) && isNumericValue(cellText)) {
+        rowData[header] = parseNumericValue(cellText);
+      } else {
+        rowData[header] = cellText;
+      }
     }
 
     jsonData.push(rowData);
