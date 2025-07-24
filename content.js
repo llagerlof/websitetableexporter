@@ -1,5 +1,78 @@
-// Global variable to track button visibility
+// IndexedDB utility functions for storing extension settings
+const DB_NAME = 'WebsiteTableExporterDB';
+const DB_VERSION = 1;
+const STORE_NAME = 'settings';
+
+// Initialize IndexedDB
+function initDB() {
+  return new Promise((resolve, reject) => {
+    const request = indexedDB.open(DB_NAME, DB_VERSION);
+
+    request.onerror = () => reject(request.error);
+    request.onsuccess = () => resolve(request.result);
+
+    request.onupgradeneeded = (event) => {
+      const db = event.target.result;
+      if (!db.objectStoreNames.contains(STORE_NAME)) {
+        const store = db.createObjectStore(STORE_NAME, { keyPath: 'key' });
+        store.createIndex('key', 'key', { unique: true });
+      }
+    };
+  });
+}
+
+// Save a setting to IndexedDB
+async function saveSetting(key, value) {
+  try {
+    const db = await initDB();
+    const transaction = db.transaction([STORE_NAME], 'readwrite');
+    const store = transaction.objectStore(STORE_NAME);
+    await store.put({ key: key, value: value });
+    return true;
+  } catch (error) {
+    console.error('Error saving setting:', error);
+    return false;
+  }
+}
+
+// Load a setting from IndexedDB
+async function loadSetting(key, defaultValue = null) {
+  try {
+    const db = await initDB();
+    const transaction = db.transaction([STORE_NAME], 'readonly');
+    const store = transaction.objectStore(STORE_NAME);
+
+    return new Promise((resolve, reject) => {
+      const request = store.get(key);
+      request.onerror = () => reject(request.error);
+      request.onsuccess = () => {
+        const result = request.result;
+        resolve(result ? result.value : defaultValue);
+      };
+    });
+  } catch (error) {
+    console.error('Error loading setting:', error);
+    return defaultValue;
+  }
+}
+
+// Global variable to track button visibility - will be loaded from storage
 let buttonsVisible = true;
+
+// Initialize settings from storage
+async function initializeSettings() {
+  buttonsVisible = await loadSetting('buttonVisibility', true);
+
+  // Apply the loaded state to any existing buttons
+  const allButtonContainers = document.querySelectorAll('.table-buttons-container');
+  allButtonContainers.forEach(container => {
+    if (buttonsVisible) {
+      container.classList.remove('hidden');
+    } else {
+      container.classList.add('hidden');
+    }
+  });
+}
 
 // Utility function to generate unique IDs
 function generateUniqueId() {
@@ -176,7 +249,7 @@ function showMessage(element, message, originalText) {
 }
 
 // Function to toggle all table buttons visibility
-function toggleAllButtons() {
+async function toggleAllButtons() {
   buttonsVisible = !buttonsVisible;
   const allButtonContainers = document.querySelectorAll('.table-buttons-container');
 
@@ -187,6 +260,9 @@ function toggleAllButtons() {
       container.classList.add('hidden');
     }
   });
+
+  // Save the new state to IndexedDB
+  await saveSetting('buttonVisibility', buttonsVisible);
 
   return buttonsVisible;
 }
@@ -361,15 +437,19 @@ function repositionAllButtons() {
 // Message listener for popup communication
 chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
   if (request.action === 'toggleButtons') {
-    const newState = toggleAllButtons();
-    sendResponse({buttonsVisible: newState});
+    toggleAllButtons().then(newState => {
+      sendResponse({buttonsVisible: newState});
+    });
+    return true; // Indicates we will send a response asynchronously
   } else if (request.action === 'getButtonsState') {
     sendResponse({buttonsVisible: buttonsVisible});
   }
 });
 
-// Initialize buttons on existing tables
-processAllTables();
+// Initialize settings and then process tables
+initializeSettings().then(() => {
+  processAllTables();
+});
 
 // Add event listeners for repositioning buttons on scroll and resize
 let repositionTimeout;

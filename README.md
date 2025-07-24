@@ -92,7 +92,7 @@ A browser extension that automatically adds export functionality to HTML tables 
 1. **Click the extension icon** in your browser's toolbar to open the popup
 2. **Click "Hide buttons"** to hide all export buttons from tables on the current page
 3. **Click "Show buttons"** to make the buttons visible again
-4. **Note**: This setting resets when the page is refreshed - it does not persist between page loads
+4. **Note**: This setting persists across page reloads and browser sessions
 
 ## 🎯 Use Cases
 
@@ -107,8 +107,8 @@ A browser extension that automatically adds export functionality to HTML tables 
 
 - **Merged Cells**: Tables with merged cells (colspan/rowspan) will show a warning message, as the exported data may not be completely reliable
 - **Dynamic Tables**: The extension automatically detects tables added to the page after initial load
-- **Button Visibility**: The hide/show toggle only affects the current page and resets on page reload
-- **Privacy**: The extension only accesses the current active tab and doesn't collect any personal data
+- **Button Visibility**: The hide/show toggle persists across page reloads and browser sessions
+- **Privacy**: The extension only accesses the current active tab and stores settings locally using IndexedDB
 
 ## 🔧 Technical Details
 
