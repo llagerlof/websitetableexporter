@@ -6,22 +6,24 @@ A browser extension that automatically adds export functionality to HTML tables 
 
 ## ✨ Features
 
-- **Universal compatibility**: Works on any website with HTML tables
-- **Multiple export formats**: CSV, JSON, and Markdown
-- **One-click export**: Export buttons appear automatically on all tables
-- **Toggle button visibility**: Hide/show export buttons via extension popup
-- **Clipboard integration**: Exported data is copied directly to your clipboard
-- **Dynamic table support**: Automatically detects and adds buttons to tables created with JavaScript
-- **Merged cell detection**: Warns users when tables contain merged cells that may affect export quality
-- **Clean formatting**: Properly handles line breaks, special characters, and escaping
+- **Universal compatibility**: Works on any website with HTML tables.
+- **Multiple export formats**: CSV, JSON, and Markdown.
+- **One-click export**: Export buttons appear automatically on all tables, even those dynamically created after page load.
+- **Data type detection**: Automatically identifies columns that contain only numeric values (don't enclose those in quotes). Also identifies columns with values containing leading zeros (enclose those in quotes).
+- **Clean formatting**: Properly handles line breaks, special characters, and HTML tags inside cells.
+- **Privacy**: The extension is fully client-side. No ads, no tracking.
+- **Toggle button visibility**: Hide/show export buttons via the extension popup.
+- **Clipboard integration**: Exported data is copied directly to your clipboard.
+- **Merged cell detection**: Warns users when tables contain merged cells that may affect export quality.
+
 
 ### Example Output
 
 **CSV Format:**
 ```
 "Name","Age","City"
-"John Doe","30","New York"
-"Jane Smith","25","Los Angeles"
+"John Doe",30,"New York"
+"Jane Smith",25,"Los Angeles"
 ```
 
 **JSON Format:**
@@ -29,12 +31,12 @@ A browser extension that automatically adds export functionality to HTML tables 
 [
   {
     "Name": "John Doe",
-    "Age": "30",
+    "Age": 30,
     "City": "New York"
   },
   {
     "Name": "Jane Smith",
-    "Age": "25",
+    "Age": 25,
     "City": "Los Angeles"
   }
 ]
@@ -50,19 +52,6 @@ A browser extension that automatically adds export functionality to HTML tables 
 
 ## 🚀 Installation
 
-### Google Chrome
-
-1. **Install from Chrome Web Store** (when published):
-   - Visit the Chrome Web Store
-   - Search for "Website Table Exporter"
-   - Click "Add to Chrome"
-
-2. **Manual Installation** (for development):
-   - Download or clone this repository
-   - Open Chrome and navigate to `chrome://extensions/`
-   - Enable "Developer mode" (toggle in top right)
-   - Click "Load unpacked" and select the extension folder
-
 ### Mozilla Firefox
 
 1. **Install from Firefox Add-ons**:
@@ -74,6 +63,16 @@ A browser extension that automatically adds export functionality to HTML tables 
    - Click "This Firefox" in the left sidebar
    - Click "Load Temporary Add-on"
    - Select the `manifest.json` file from the extension folder
+
+### Google Chrome
+
+1. **Manual Installation** (for development):
+   - Download or clone this repository
+   - Open Chrome and navigate to `chrome://extensions/`
+   - Enable "Developer mode" (toggle in top right)
+   - Click "Load unpacked" and select the extension folder
+
+2. **Install from Chrome Web Store** (when published):
 
 ## 📖 How to Use
 
@@ -101,20 +100,6 @@ A browser extension that automatically adds export functionality to HTML tables 
 - **API Development**: Export table data as JSON for testing or development purposes
 - **Academic Work**: Extract data from academic databases and online resources
 
-## ⚠️ Important Notes
-
-- **Merged Cells**: Tables with merged cells (colspan/rowspan) will show a warning message, as the exported data may not be completely reliable
-- **Dynamic Tables**: The extension automatically detects tables added to the page after initial load
-- **Button Visibility**: The hide/show toggle persists across page reloads and browser sessions
-- **Privacy**: The extension only accesses the current active tab and stores settings locally using IndexedDB
-
-## 🔧 Technical Details
-
-- **Manifest Version**: 3
-- **Permissions**: `activeTab`, `clipboardWrite`
-- **Content Script**: Runs on all websites (`<all_urls>`)
-- **Browser Compatibility**: Chrome, Firefox, and other Chromium-based browsers
-
 ## 🤝 Contributing
 
 Contributions are welcome! Please feel free to submit issues, feature requests, or pull requests.
@@ -123,12 +108,9 @@ Contributions are welcome! Please feel free to submit issues, feature requests, 
 
 This project is open source. Please check the license file for more details.
 
-## 👨‍💻 Author
-
-**Lawrence Lagerlof**
-- GitHub: [@llagerlof](https://github.com/llagerlof)
-- Project: [websitetableexporter](https://github.com/llagerlof/websitetableexporter)
+**Project page** (this page): https://github.com/llagerlof/websitetableexporter
 
 ---
+
 
 *Made with ❤️ for developers, researchers, and data enthusiasts*
