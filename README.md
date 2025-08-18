@@ -59,20 +59,43 @@ A browser extension that automatically adds export functionality to HTML tables 
 
 2. **Manual Installation** (for development):
    - Download or clone this repository
-   - Open Firefox and navigate to `about:debugging`
-   - Click "This Firefox" in the left sidebar
-   - Click "Load Temporary Add-on"
-   - Select the `manifest.json` file from the extension folder
+   - Build once, then load from the built folder
+     - Install deps and build: `npm install` then `npm run build`
+     - Open Firefox and navigate to `about:debugging`
+     - Click "This Firefox" in the left sidebar
+     - Click "Load Temporary Add-on"
+     - Select the `manifest.json` inside `./dist/firefox/`
+   - Note: Temporary add-ons must be reloaded after restarting Firefox
 
 ### Google Chrome
 
-1. **Manual Installation** (for development):
+1. **Manual Installation**:
    - Download or clone this repository
-   - Open Chrome and navigate to `chrome://extensions/`
-   - Enable "Developer mode" (toggle in top right)
-   - Click "Load unpacked" and select the extension folder
+   - Build once, then load from the built folder
+     - Install deps and build: `npm install` then `npm run build`
+     - Open Chrome and navigate to `chrome://extensions/`
+     - Enable "Developer mode" (toggle in top right)
+     - Click "Load unpacked" and select `./dist/chrome/`
 
-2. **Install from Chrome Web Store** (when published):
+## 🛠️ Build from source
+
+The project includes a simple build script that prepares unpacked folders for each browser and ZIP files ready for store submission.
+
+Requirements:
+- Node.js >= 16
+
+Steps:
+1. Install dependencies:
+   - `npm install`
+2. Run the build:
+   - `npm run build`
+3. Output:
+   - Unpacked builds:
+     - `./dist/chrome/` (Manifest V3)
+     - `./dist/firefox/` (with Firefox-compatible manifest)
+   - ZIP archives:
+     - `./dist/websitetableexporter-chrome-v<version>.zip`
+     - `./dist/websitetableexporter-firefox-v<version>.zip`
 
 ## 📖 How to Use
 
