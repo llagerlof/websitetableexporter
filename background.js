@@ -54,10 +54,24 @@ async function setGlobalVisibility(visible) {
 
 async function broadcastVisibilityToAllTabs() {
   const visible = await getGlobalVisibility();
+  const canTabReceiveMessages = (tab) => {
+    const url = tab && tab.url ? String(tab.url) : '';
+    return /^(https?:|file:|ftp:)/i.test(url);
+  };
+  const safeSendMessage = (tabId, message) => {
+    try {
+      chrome.tabs.sendMessage(tabId, message, () => {
+        // Swallow "no receiver" errors for tabs without content scripts (e.g., chrome://, webstore, etc.)
+        void chrome.runtime.lastError;
+      });
+    } catch (e) {
+      // Ignore
+    }
+  };
   chrome.tabs.query({}, (tabs) => {
     for (const tab of tabs) {
-      if (tab.id) {
-        chrome.tabs.sendMessage(tab.id, { action: 'applyButtonsState', buttonsVisible: visible });
+      if (tab.id && canTabReceiveMessages(tab)) {
+        safeSendMessage(tab.id, { action: 'applyButtonsState', buttonsVisible: visible });
       }
     }
   });
@@ -65,9 +79,21 @@ async function broadcastVisibilityToAllTabs() {
 
 async function pushVisibilityToActiveTab(windowId) {
   const visible = await getGlobalVisibility();
+  const canTabReceiveMessages = (tab) => {
+    const url = tab && tab.url ? String(tab.url) : '';
+    return /^(https?:|file:|ftp:)/i.test(url);
+  };
+  const safeSendMessage = (tabId, message) => {
+    try {
+      chrome.tabs.sendMessage(tabId, message, () => {
+        void chrome.runtime.lastError;
+      });
+    } catch (e) {}
+  };
   chrome.tabs.query({ active: true, windowId: windowId ?? chrome.windows.WINDOW_ID_CURRENT }, (tabs) => {
-    if (tabs && tabs[0] && tabs[0].id) {
-      chrome.tabs.sendMessage(tabs[0].id, { action: 'applyButtonsState', buttonsVisible: visible });
+    const tab = tabs && tabs[0];
+    if (tab && tab.id && canTabReceiveMessages(tab)) {
+      safeSendMessage(tab.id, { action: 'applyButtonsState', buttonsVisible: visible });
     }
   });
 }
