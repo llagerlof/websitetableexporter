@@ -10,30 +10,49 @@
       font-family: system-ui, -apple-system, sans-serif;
       font-size: 12px;
     }
-
-    .toggle-button {
-      width: 100%;
-      padding: 8px 12px;
-      background-color: #4285f4;
-      color: white;
-      border: none;
+    .setting-row {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+    .checkbox {
+      appearance: none;
+      width: 16px;
+      height: 16px;
+      border: 2px solid #9aa0a6;
       border-radius: 4px;
+      display: grid;
+      place-content: center;
       cursor: pointer;
-      font-size: 12px;
-      transition: background-color 0.2s;
+      transition: border-color 0.2s, background-color 0.2s;
     }
-
-    .toggle-button:hover {
-      background-color: #3367d6;
+    .checkbox::before {
+      content: '';
+      width: 10px;
+      height: 10px;
+      transform: scale(0);
+      transition: transform 0.1s ease-in-out;
+      clip-path: polygon(14% 44%, 0 65%, 50% 100%, 100% 13%, 80% 0, 43% 62%);
+      background-color: #fff;
     }
-
-    .toggle-button:active {
-      background-color: #2c5aa0;
+    .checkbox:checked {
+      background-color: #34a853;
+      border-color: #34a853;
+    }
+    .checkbox:checked::before {
+      transform: scale(1);
+    }
+    label {
+      user-select: none;
+      cursor: pointer;
     }
   </style>
 </head>
 <body>
-  <button id="toggleButton" class="toggle-button">Hide buttons</button>
+  <div class="setting-row">
+    <input type="checkbox" id="showButtonsCheckbox" class="checkbox" checked>
+    <label for="showButtonsCheckbox">Show export buttons on tables</label>
+  </div>
   <script src="popup.js"></script>
 </body>
 </html>

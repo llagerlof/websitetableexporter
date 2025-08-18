@@ -12,7 +12,7 @@ A browser extension that automatically adds export functionality to HTML tables 
 - **Data type detection**: Automatically identifies columns that contain only numeric values (don't enclose those in quotes). Also identifies columns with values containing leading zeros (enclose those in quotes).
 - **Clean formatting**: Properly handles line breaks, special characters, and HTML tags inside cells.
 - **Privacy**: The extension is fully client-side. No ads, no tracking.
-- **Toggle button visibility**: Hide/show export buttons via the extension popup.
+- **Toggle button visibility**: Single checkbox in the popup to show/hide export buttons, persisted across tabs and sessions.
 - **Clipboard integration**: Exported data is copied directly to your clipboard.
 - **Merged cell detection**: Warns users when tables contain merged cells that may affect export quality.
 
@@ -87,9 +87,10 @@ A browser extension that automatically adds export functionality to HTML tables 
 
 ### Toggle Button Visibility
 1. **Click the extension icon** in your browser's toolbar to open the popup
-2. **Click "Hide buttons"** to hide all export buttons from tables on the current page
-3. **Click "Show buttons"** to make the buttons visible again
-4. **Note**: This setting persists across page reloads and browser sessions
+2. Use the checkbox **"Show export buttons on tables"** (enabled by default)
+   - When checked, export buttons are shown on tables across all tabs
+   - When unchecked, export buttons are hidden across all tabs
+3. The setting is **persisted** and **synchronized**: switching tabs or focusing a different window will apply the latest setting to that tab automatically
 
 ## 🎯 Use Cases
 

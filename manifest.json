@@ -5,7 +5,8 @@
   "description": "Export website's tables to CSV, JSON and Markdown.",
   "permissions": [
     "activeTab",
-    "clipboardWrite"
+    "clipboardWrite",
+    "tabs"
   ],
   "action": {
     "default_popup": "popup.html",
@@ -16,6 +17,9 @@
     "32": "icons/icon-32.png",
     "48": "icons/icon-48.png",
     "128": "icons/icon-128.png"
+  },
+  "background": {
+    "service_worker": "background.js"
   },
   "content_scripts": [
     {

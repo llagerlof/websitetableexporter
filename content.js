@@ -1,69 +1,25 @@
-// IndexedDB utility functions for storing extension settings
-const DB_NAME = 'WebsiteTableExporterDB';
-const DB_VERSION = 1;
-const STORE_NAME = 'settings';
-
-// Initialize IndexedDB
-function initDB() {
-  return new Promise((resolve, reject) => {
-    const request = indexedDB.open(DB_NAME, DB_VERSION);
-
-    request.onerror = () => reject(request.error);
-    request.onsuccess = () => resolve(request.result);
-
-    request.onupgradeneeded = (event) => {
-      const db = event.target.result;
-      if (!db.objectStoreNames.contains(STORE_NAME)) {
-        const store = db.createObjectStore(STORE_NAME, { keyPath: 'key' });
-        store.createIndex('key', 'key', { unique: true });
-      }
-    };
-  });
-}
-
-// Save a setting to IndexedDB
-async function saveSetting(key, value) {
-  try {
-    const db = await initDB();
-    const transaction = db.transaction([STORE_NAME], 'readwrite');
-    const store = transaction.objectStore(STORE_NAME);
-    await store.put({ key: key, value: value });
-    return true;
-  } catch (error) {
-    console.error('Error saving setting:', error);
-    return false;
-  }
-}
-
-// Load a setting from IndexedDB
-async function loadSetting(key, defaultValue = null) {
-  try {
-    const db = await initDB();
-    const transaction = db.transaction([STORE_NAME], 'readonly');
-    const store = transaction.objectStore(STORE_NAME);
-
-    return new Promise((resolve, reject) => {
-      const request = store.get(key);
-      request.onerror = () => reject(request.error);
-      request.onsuccess = () => {
-        const result = request.result;
-        resolve(result ? result.value : defaultValue);
-      };
-    });
-  } catch (error) {
-    console.error('Error loading setting:', error);
-    return defaultValue;
-  }
-}
+// Content script relies on the background service worker for persisted settings via IndexedDB.
 
 // Global variable to track button visibility - will be loaded from storage
 let buttonsVisible = true;
 
 // Initialize settings from storage
 async function initializeSettings() {
-  buttonsVisible = await loadSetting('buttonVisibility', true);
+  try {
+    const response = await new Promise((resolve) => {
+      chrome.runtime.sendMessage({ action: 'getGlobalButtonsSetting' }, (resp) => {
+        resolve(resp);
+      });
+    });
+    if (response && typeof response.buttonsVisible !== 'undefined') {
+      buttonsVisible = Boolean(response.buttonsVisible);
+    } else {
+      buttonsVisible = true;
+    }
+  } catch (e) {
+    buttonsVisible = true;
+  }
 
-  // Apply the loaded state to any existing buttons
   const allButtonContainers = document.querySelectorAll('.table-buttons-container');
   allButtonContainers.forEach(container => {
     if (buttonsVisible) {
@@ -351,9 +307,18 @@ function showMessage(element, message, originalText) {
 
 // Function to toggle all table buttons visibility
 async function toggleAllButtons() {
-  buttonsVisible = !buttonsVisible;
-  const allButtonContainers = document.querySelectorAll('.table-buttons-container');
+  const newValue = !buttonsVisible;
+  await new Promise((resolve) => {
+    chrome.runtime.sendMessage({ action: 'setGlobalButtonsSetting', buttonsVisible: newValue }, () => resolve());
+  });
+  // The background will broadcast back the applied state. We optimistically apply here too.
+  applyButtonsVisibility(newValue);
+  return newValue;
+}
 
+function applyButtonsVisibility(visible) {
+  buttonsVisible = Boolean(visible);
+  const allButtonContainers = document.querySelectorAll('.table-buttons-container');
   allButtonContainers.forEach(container => {
     if (buttonsVisible) {
       container.classList.remove('hidden');
@@ -361,11 +326,6 @@ async function toggleAllButtons() {
       container.classList.add('hidden');
     }
   });
-
-  // Save the new state to IndexedDB
-  await saveSetting('buttonVisibility', buttonsVisible);
-
-  return buttonsVisible;
 }
 
 // Function to add buttons to a single table
@@ -541,9 +501,11 @@ chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
     toggleAllButtons().then(newState => {
       sendResponse({buttonsVisible: newState});
     });
-    return true; // Indicates we will send a response asynchronously
+    return true; // async response
   } else if (request.action === 'getButtonsState') {
     sendResponse({buttonsVisible: buttonsVisible});
+  } else if (request.action === 'applyButtonsState' && typeof request.buttonsVisible !== 'undefined') {
+    applyButtonsVisibility(Boolean(request.buttonsVisible));
   }
 });
 
