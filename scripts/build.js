@@ -59,6 +59,8 @@ async function build() {
       'package-lock.json',
       'pnpm-lock.yaml',
       'yarn.lock',
+      'assets',
+      'sample-table.html',
       'README.md',
       'LICENSE',
     ];
