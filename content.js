@@ -35,30 +35,8 @@ function generateUniqueId() {
   return 'table-' + Date.now() + '-' + Math.random().toString(36).substr(2, 9);
 }
 
-// Function to position button container relative to its table
-function positionButtonContainer(buttonContainer, table) {
-  if (!buttonContainer.parentElement || !table) return;
-
-  const tableRect = table.getBoundingClientRect();
-  const containerParent = buttonContainer.parentElement;
-
-  // Check if the container parent has a positioned context
-  const parentComputedStyle = window.getComputedStyle(containerParent);
-  const isParentPositioned = ['relative', 'absolute', 'fixed'].includes(parentComputedStyle.position);
-
-  if (!isParentPositioned) {
-    // If parent is not positioned, use fixed positioning relative to viewport
-    buttonContainer.style.position = 'fixed';
-    buttonContainer.style.left = tableRect.left + 'px';
-    buttonContainer.style.top = tableRect.top + 'px';
-  } else {
-    // If parent is positioned, use absolute positioning relative to parent
-    const parentRect = containerParent.getBoundingClientRect();
-    buttonContainer.style.position = 'absolute';
-    buttonContainer.style.left = (tableRect.left - parentRect.left) + 'px';
-    buttonContainer.style.top = (tableRect.top - parentRect.top) + 'px';
-  }
-}
+// Legacy no-op: containers are placed inside the first cell, no external positioning needed
+function positionButtonContainer(buttonContainer, table) {}
 
 // Helper function to check if a value is a valid number
 function isNumericValue(value) {
@@ -73,6 +51,17 @@ function isNumericValue(value) {
 
   // Check for valid number formats including integers, decimals, and scientific notation
   return !isNaN(cleaned) && !isNaN(parseFloat(cleaned)) && isFinite(cleaned) && cleaned !== '';
+}
+
+// Helper to get cell text excluding in-cell UI (export buttons, warnings)
+function getCellTextExcludingUI(cell) {
+  if (!cell) return '';
+  const clone = cell.cloneNode(true);
+  const uiSelectors = ['.table-buttons-container', '.merged-cells-warning'];
+  uiSelectors.forEach(sel => {
+    clone.querySelectorAll(sel).forEach(el => el.remove());
+  });
+  return clone.innerText.trim();
 }
 
 // Helper function to convert a formatted number string to a numeric value
@@ -116,7 +105,7 @@ function analyzeTableColumns(table) {
     for (let rowIndex = 1; rowIndex < table.rows.length; rowIndex++) {
       const row = table.rows[rowIndex];
       if (colIndex < row.cells.length) {
-        const cellText = row.cells[colIndex].innerText.trim();
+        const cellText = getCellTextExcludingUI(row.cells[colIndex]);
 
         // Skip empty cells
         if (cellText !== '') {
@@ -151,7 +140,7 @@ function tableToCSV(table) {
   for (let i = 0; i < table.rows.length; i++) {
     let row = [], cols = table.rows[i].querySelectorAll('td, th');
     for (let j = 0; j < cols.length; j++) {
-      let cellText = cols[j].innerText.trim();
+      let cellText = getCellTextExcludingUI(cols[j]);
 
       // For header row (i === 0) or non-numeric columns, always quote
       if (i === 0 || !numericColumns.has(j) || !isNumericValue(cellText)) {
@@ -177,7 +166,7 @@ function tableToJSON(table) {
   let headerRow = table.rows[0];
   if (headerRow) {
     for (let j = 0; j < headerRow.cells.length; j++) {
-      headers.push(headerRow.cells[j].innerText.trim());
+      headers.push(getCellTextExcludingUI(headerRow.cells[j]));
     }
   }
 
@@ -187,7 +176,7 @@ function tableToJSON(table) {
     let cols = table.rows[i].querySelectorAll('td, th');
 
     for (let j = 0; j < cols.length; j++) {
-      let cellText = cols[j].innerText.trim();
+      let cellText = getCellTextExcludingUI(cols[j]);
       let header = headers[j] || `Column${j + 1}`;
 
       // Convert to number if this column is numeric and the value is numeric
@@ -213,7 +202,7 @@ function tableToMarkdown(table) {
   let headerRow = table.rows[0];
   let headers = [];
       for (let j = 0; j < headerRow.cells.length; j++) {
-      let cellText = headerRow.cells[j].innerText.trim();
+      let cellText = getCellTextExcludingUI(headerRow.cells[j]);
       // Replace line breaks with <br> tags for markdown (supports Windows \r\n, Unix \n, and Mac \r)
       cellText = cellText.replace(/\r\n|\r|\n/g, '<br>');
       // Escape pipe characters in markdown
@@ -234,7 +223,7 @@ function tableToMarkdown(table) {
     let cols = table.rows[i].querySelectorAll('td, th');
 
     for (let j = 0; j < cols.length; j++) {
-      let cellText = cols[j].innerText.trim();
+      let cellText = getCellTextExcludingUI(cols[j]);
       // Replace line breaks with <br> tags for markdown (supports Windows \r\n, Unix \n, and Mac \r)
       cellText = cellText.replace(/\r\n|\r|\n/g, '<br>');
       // Escape pipe characters in markdown
@@ -281,18 +270,18 @@ function createWarningMessage(buttonContainer) {
     warningDiv.remove();
   });
 
-  // Position warning as a sibling to button container, not as a child
-  // This prevents it from inheriting the container's opacity
+  // Position warning as a sibling within the same cell, below the button container
   if (buttonContainer.parentNode) {
-    buttonContainer.parentNode.insertBefore(warningDiv, buttonContainer.nextSibling);
+    const parentEl = buttonContainer.parentNode;
+    const parentComputedStyle = window.getComputedStyle(parentEl);
+    if (parentComputedStyle.position === 'static') {
+      parentEl.style.position = 'relative';
+    }
 
-    // Position the warning relative to the button container
-    const containerRect = buttonContainer.getBoundingClientRect();
-    const parentRect = buttonContainer.parentNode.getBoundingClientRect();
-
-    warningDiv.style.position = buttonContainer.style.position; // Use same positioning as container
-    warningDiv.style.left = buttonContainer.style.left;
-    warningDiv.style.top = (parseInt(buttonContainer.style.top) + buttonContainer.offsetHeight + 2) + 'px';
+    parentEl.insertBefore(warningDiv, buttonContainer.nextSibling);
+    warningDiv.style.position = 'absolute';
+    warningDiv.style.left = '0px';
+    warningDiv.style.top = (buttonContainer.offsetHeight + 2) + 'px';
   }
 
   return warningDiv;
@@ -330,8 +319,16 @@ function applyButtonsVisibility(visible) {
 
 // Function to add buttons to a single table
 function addButtonsToTable(table) {
-  // Skip if table already has buttons
-  if (table.nextElementSibling && table.nextElementSibling.classList.contains('table-buttons-container')) {
+  // Determine first cell (header or data) in the first row
+  const firstRow = (table.tHead && table.tHead.rows.length > 0) ? table.tHead.rows[0] : table.rows[0];
+  if (!firstRow || !firstRow.cells || firstRow.cells.length === 0) {
+    return;
+  }
+  const firstCell = firstRow.cells[0];
+
+  // Skip if this cell already contains our buttons
+  const hasContainerAlready = Array.from(firstCell.children).some(el => el.classList && el.classList.contains('table-buttons-container'));
+  if (hasContainerAlready) {
     return;
   }
 
@@ -371,18 +368,14 @@ function addButtonsToTable(table) {
   // Add button row to container
   buttonContainer.appendChild(buttonRow);
 
-  // Position the button container as a sibling, not as a child of the table
-  // This prevents any interference with table layout
-  if (table.parentNode) {
-    table.parentNode.insertBefore(buttonContainer, table.nextSibling);
+  // Ensure the first cell can anchor absolutely positioned children
+  const cellComputed = window.getComputedStyle(firstCell);
+  if (cellComputed.position === 'static') {
+    firstCell.style.position = 'relative';
   }
 
-  // Store reference to the table for positioning
-  buttonContainer.setAttribute('data-table-id', generateUniqueId());
-  table.setAttribute('data-table-id', buttonContainer.getAttribute('data-table-id'));
-
-  // Position the button container
-  positionButtonContainer(buttonContainer, table);
+  // Place the button container inside the first cell
+  firstCell.appendChild(buttonContainer);
 
   // CSV button event listener
   csvButton.addEventListener('click', () => {
@@ -459,38 +452,21 @@ function processAllTables() {
 // Function to reposition a warning message relative to its button container
 function repositionWarningMessage(warning, buttonContainer) {
   if (!warning || !buttonContainer || !buttonContainer.parentNode) return;
-
-  warning.style.position = buttonContainer.style.position;
-  warning.style.left = buttonContainer.style.left;
-  warning.style.top = (parseInt(buttonContainer.style.top) + buttonContainer.offsetHeight + 2) + 'px';
+  warning.style.position = 'absolute';
+  warning.style.left = '0px';
+  warning.style.top = (buttonContainer.offsetHeight + 2) + 'px';
 }
 
 // Function to reposition all button containers
 function repositionAllButtons() {
   document.querySelectorAll('.table-buttons-container').forEach(buttonContainer => {
-    const tableId = buttonContainer.getAttribute('data-table-id');
-    const table = document.querySelector(`table[data-table-id="${tableId}"]`);
-    if (table) {
-      positionButtonContainer(buttonContainer, table);
-
-      // Also reposition any associated warning messages
-      let warning = buttonContainer.nextElementSibling;
-      while (warning && !warning.classList.contains('merged-cells-warning')) {
-        warning = warning.nextElementSibling;
-      }
-      if (warning) {
-        repositionWarningMessage(warning, buttonContainer);
-      }
-    } else {
-      // Clean up orphaned button containers and their warnings
-      let warning = buttonContainer.nextElementSibling;
-      while (warning && !warning.classList.contains('merged-cells-warning')) {
-        warning = warning.nextElementSibling;
-      }
-      if (warning) {
-        warning.remove();
-      }
-      buttonContainer.remove();
+    // Reposition any associated warning messages under the container
+    let warning = buttonContainer.nextElementSibling;
+    while (warning && !warning.classList.contains('merged-cells-warning')) {
+      warning = warning.nextElementSibling;
+    }
+    if (warning) {
+      repositionWarningMessage(warning, buttonContainer);
     }
   });
 }
