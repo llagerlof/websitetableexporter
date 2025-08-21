@@ -316,7 +316,43 @@ function applyButtonsVisibility(visible) {
     }
   });
 }
-
+function download(data, filename, type) {
+    var file = new Blob([data], {type: type});
+    if (window.navigator.msSaveOrOpenBlob) {// IE10+
+        // console.log("Blobbing");
+        window.navigator.msSaveOrOpenBlob(file, filename);
+    } else { // Others
+        // console.log("Bypass");
+        var a = document.createElement("a"),
+        url = URL.createObjectURL(file);
+        a.href = url;
+        a.download = filename;
+        a.click();
+        setTimeout(function() {
+            window.URL.revokeObjectURL(url);  
+        }, 0); 
+    }
+}
+function convertTableTo(table, method, fname)
+{
+  const data = method(table);
+  if (window.isSecureContext)
+    navigator.clipboard.writeText(data).then(() => {
+      showMessage(csvButton, 'Copied!', 'CSV');
+      // Show warning if table has merged cells
+      if (hasMergedCells(table)) {
+        // Remove any existing warning (look for siblings)
+        let existingWarning = buttonContainer.nextElementSibling;
+        while (existingWarning && !existingWarning.classList.contains('merged-cells-warning'))
+          existingWarning = existingWarning.nextElementSibling;
+        if (existingWarning)
+          existingWarning.remove();
+        createWarningMessage(buttonContainer);
+      }
+    });
+  else
+    download(data, fname, 'text/csv');
+}
 // Function to add buttons to a single table
 function addButtonsToTable(table) {
   // Determine first cell (header or data) in the first row
@@ -370,78 +406,15 @@ function addButtonsToTable(table) {
 
   // Ensure the first cell can anchor absolutely positioned children
   const cellComputed = window.getComputedStyle(firstCell);
-  if (cellComputed.position === 'static') {
+  if (cellComputed.position === 'static')
     firstCell.style.position = 'relative';
-  }
 
   // Place the button container inside the first cell
   firstCell.appendChild(buttonContainer);
 
-  // CSV button event listener
-  csvButton.addEventListener('click', () => {
-    const csvData = tableToCSV(table);
-    navigator.clipboard.writeText(csvData).then(() => {
-      showMessage(csvButton, 'Copied!', 'CSV');
-
-      // Show warning if table has merged cells
-      if (hasMergedCells(table)) {
-        // Remove any existing warning (look for siblings)
-        let existingWarning = buttonContainer.nextElementSibling;
-        while (existingWarning && !existingWarning.classList.contains('merged-cells-warning')) {
-          existingWarning = existingWarning.nextElementSibling;
-        }
-        if (existingWarning) {
-          existingWarning.remove();
-        }
-
-        const warning = createWarningMessage(buttonContainer);
-      }
-    });
-  });
-
-  // JSON button event listener
-  jsonButton.addEventListener('click', () => {
-    const jsonData = tableToJSON(table);
-    navigator.clipboard.writeText(jsonData).then(() => {
-      showMessage(jsonButton, 'Copied!', 'JSON');
-
-      // Show warning if table has merged cells
-      if (hasMergedCells(table)) {
-        // Remove any existing warning (look for siblings)
-        let existingWarning = buttonContainer.nextElementSibling;
-        while (existingWarning && !existingWarning.classList.contains('merged-cells-warning')) {
-          existingWarning = existingWarning.nextElementSibling;
-        }
-        if (existingWarning) {
-          existingWarning.remove();
-        }
-
-        const warning = createWarningMessage(buttonContainer);
-      }
-    });
-  });
-
-  // Markdown button event listener
-  markdownButton.addEventListener('click', () => {
-    const markdownData = tableToMarkdown(table);
-    navigator.clipboard.writeText(markdownData).then(() => {
-      showMessage(markdownButton, 'Copied!', 'Markdown');
-
-      // Show warning if table has merged cells
-      if (hasMergedCells(table)) {
-        // Remove any existing warning (look for siblings)
-        let existingWarning = buttonContainer.nextElementSibling;
-        while (existingWarning && !existingWarning.classList.contains('merged-cells-warning')) {
-          existingWarning = existingWarning.nextElementSibling;
-        }
-        if (existingWarning) {
-          existingWarning.remove();
-        }
-
-        const warning = createWarningMessage(buttonContainer);
-      }
-    });
-  });
+  csvButton.addEventListener     ('click', () => convertTableTo(table,      tableToCSV, "table.csv" ));
+  jsonButton.addEventListener    ('click', () => convertTableTo(table,     tableToJSON, "table.json"));
+  markdownButton.addEventListener('click', () => convertTableTo(table, tableToMarkdown, "table.md"  ));
 }
 
 // Function to process all tables on the page
