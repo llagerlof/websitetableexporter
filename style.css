@@ -31,10 +31,10 @@ th:first-child:hover > .table-buttons-container {
 .table-button {
   background-color: #f0f0f0;
   border: 1px solid #ccc;
-  border-radius: 3px;
-  padding: 2px 5px;
+  padding: 0 3px;
   cursor: pointer;
-  font-size: 10px;
+  font-size: 8px;
+  line-height: 1;
   font-family: sans-serif;
   user-select: none;
   transition: background-color 0.2s;
