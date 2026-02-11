@@ -12,10 +12,6 @@
   pointer-events: auto;
 }
 
-.table-buttons-container.hidden {
-  display: none !important;
-}
-
 .table-buttons-container .button-row {
   display: flex;
   gap: 2px;
@@ -59,17 +55,6 @@ th:first-child:hover > .table-buttons-container {
 
 .markdown-button {
   background-color: #f0f0f0;
-}
-
-.copy-message {
-  position: absolute;
-  top: 0;
-  left: 0;
-  background-color: #4CAF50;
-  color: white;
-  padding: 2px 5px;
-  border-radius: 3px;
-  font-size: 12px;
 }
 
 .merged-cells-warning {

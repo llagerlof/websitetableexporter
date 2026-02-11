@@ -19,15 +19,6 @@ async function initializeSettings() {
   } catch (e) {
     buttonsVisible = true;
   }
-
-  const allButtonContainers = document.querySelectorAll('.table-buttons-container');
-  allButtonContainers.forEach(container => {
-    if (buttonsVisible) {
-      container.classList.remove('hidden');
-    } else {
-      container.classList.add('hidden');
-    }
-  });
 }
 
 // Utility function to generate unique IDs
@@ -307,18 +298,23 @@ async function toggleAllButtons() {
 
 function applyButtonsVisibility(visible) {
   buttonsVisible = Boolean(visible);
-  const allButtonContainers = document.querySelectorAll('.table-buttons-container');
-  allButtonContainers.forEach(container => {
-    if (buttonsVisible) {
-      container.classList.remove('hidden');
-    } else {
-      container.classList.add('hidden');
-    }
-  });
+  if (buttonsVisible) {
+    processAllTables();
+  } else {
+    removeAllButtonsAndWarnings();
+  }
+}
+
+function removeAllButtonsAndWarnings() {
+  document.querySelectorAll('.merged-cells-warning').forEach(warning => warning.remove());
+  document.querySelectorAll('.table-buttons-container').forEach(container => container.remove());
 }
 
 // Function to add buttons to a single table
 function addButtonsToTable(table) {
+  if (!buttonsVisible) {
+    return;
+  }
   // Determine first cell (header or data) in the first row
   const firstRow = (table.tHead && table.tHead.rows.length > 0) ? table.tHead.rows[0] : table.rows[0];
   if (!firstRow || !firstRow.cells || firstRow.cells.length === 0) {
@@ -335,11 +331,6 @@ function addButtonsToTable(table) {
   // Create container for buttons
   const buttonContainer = document.createElement('div');
   buttonContainer.classList.add('table-buttons-container');
-
-  // Apply current visibility state
-  if (!buttonsVisible) {
-    buttonContainer.classList.add('hidden');
-  }
 
   // Create button row to hold the buttons
   const buttonRow = document.createElement('div');
@@ -487,7 +478,7 @@ chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
 
 // Initialize settings and then process tables
 initializeSettings().then(() => {
-  processAllTables();
+  applyButtonsVisibility(buttonsVisible);
 });
 
 // Add event listeners for repositioning buttons on scroll and resize
